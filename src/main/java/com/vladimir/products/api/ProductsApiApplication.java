@@ -6,7 +6,6 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
-import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
 
 import springfox.documentation.service.ApiInfo;
@@ -25,22 +24,14 @@ public class ProductsApiApplication {
 
 	@Bean
 	public Docket swaggerConfiguration() {
-		return new Docket(DocumentationType.SWAGGER_2)
-				.select()
-				.apis(RequestHandlerSelectors.basePackage("com.vladimir.products.api.controller"))
-				.build()
+		return new Docket(DocumentationType.SWAGGER_2).select()
+				.apis(RequestHandlerSelectors.basePackage("com.vladimir.products.api.controller")).build()
 				.apiInfo(apiDetails());
 	}
 
 	private ApiInfo apiDetails() {
-		return new ApiInfo(
-				"Products REST API", 
-				"API Assignment.", 
-				"1.0", 
-				"Free To Use",
-				new Contact("Vladimir Bozhkov", "https://vladibo13.github.io/portfolio/", "vl.bozhkov@gmail.com"), 
-				"License of API",
-				"https://vladibo13.github.io/portfolio/",
-				Collections.emptyList());
+		return new ApiInfo("Products REST API", "API Assignment.", "1.0", "Free To Use",
+				new Contact("Vladimir Bozhkov", "https://vladibo13.github.io/portfolio/", "vl.bozhkov@gmail.com"),
+				"License of API", "https://vladibo13.github.io/portfolio/", Collections.emptyList());
 	}
 }
