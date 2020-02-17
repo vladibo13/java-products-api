@@ -18,8 +18,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.vladimir.products.api.model.Product;
 import com.vladimir.products.api.service.ProductService;
 
+import io.swagger.annotations.ApiOperation;
+
 @RestController
-@RequestMapping("/api/products")
+@RequestMapping("/api")
 public class ProductController {
 	@Autowired
 	private Environment env;
@@ -29,44 +31,56 @@ public class ProductController {
 
 	
 	@GetMapping("/status")
+	@ApiOperation(value="Server Status")
 	public String status() {
 		return "server running on port " + env.getProperty("local.server.port");
 	}
 	
-	@GetMapping
+	@ApiOperation(value="List of the products items")
+	@GetMapping("/products")
 	public ResponseEntity<List<Product>> getAllProducts() {
 		List<Product> productList = productService.getallProducts();
 		return new ResponseEntity<List<Product>>(productList, HttpStatus.OK);
 	}
 	
-	@GetMapping("/{id}")
+	@GetMapping("/products/{id}")
+	@ApiOperation(value="Read product details by itemNo", notes="Provide an id to look for specific product")
 	public ResponseEntity<Product> getProductById(@PathVariable("id") String id){
 		Product product = productService.getProductById(id);
+		if(product == null) {
+			return new ResponseEntity<>(null,HttpStatus.NO_CONTENT);
+		}
 		return new ResponseEntity<Product>(product, HttpStatus.OK);
 	}
 	
-	
-	@PostMapping
+	@ApiOperation(value="Add product to stock", notes="Provide json, itemNo generated automatically(no need to pass it in json, other fields mandatory)")
+	@PostMapping("/products")
 	public ResponseEntity<Product> saveProduct(@RequestBody Product product) {
 		Product savedProduct = productService.saveProduct(product);
 		return new ResponseEntity<Product>(savedProduct, HttpStatus.CREATED);
 	}
 	
-	@PutMapping("/{id}/w/{amountToWithdrawal}")
+	
+	@PutMapping("/products/{id}/w/{amountToWithdrawal}")
+	@ApiOperation(value="Withdrawal quantity of a specific product from stock", notes="Provide an id and amount to withdrawal")
 	public ResponseEntity<Product> toWithdrawal(@PathVariable("id") String id, @PathVariable("amountToWithdrawal") String amountToWithdrawal){
 		Product updatedProduct = productService.toWithdrawal(id, amountToWithdrawal);
+		if(updatedProduct == null) {
+			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+		}
 		return new ResponseEntity<>(updatedProduct, HttpStatus.OK);
 	}
 	
-	@PutMapping("/{id}/d/{amountToDeposit}")
+	@PutMapping("/products/{id}/d/{amountToDeposit}")
+	@ApiOperation(value="Deposit quantity of a specific product to stock", notes="Provide an id and amount to deposit")
 	public ResponseEntity<Product> toDeposit(@PathVariable("id") String id, @PathVariable("amountToDeposit") String amountToDeposit){
 		Product updatedProduct = productService.toDeposit(id, amountToDeposit);
 		return new ResponseEntity<>(updatedProduct, HttpStatus.OK);
 	}
 	
 	
-	
-	@DeleteMapping("/{id}")
+	@DeleteMapping("/products/{id}")
+	@ApiOperation(value="Delete specific product from stock", notes="Provide an id to look for specific product")
 	public ResponseEntity<String> deleteProductById(@PathVariable("id") String id) {
 		productService.deleteProductById(id);
 		return new ResponseEntity<>("Success", HttpStatus.OK);

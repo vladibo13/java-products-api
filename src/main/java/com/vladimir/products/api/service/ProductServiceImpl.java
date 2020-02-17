@@ -38,6 +38,7 @@ public class ProductServiceImpl implements ProductService {
 	public void deleteProductById(String id) {
 		// TODO Auto-generated method stub
 		productRepository.deleteById(Long.parseLong(id));
+		
 	}
 
 	@Override
@@ -45,6 +46,9 @@ public class ProductServiceImpl implements ProductService {
 		// TODO Auto-generated method stub
 		Product productFromDb = productRepository.findById(Long.parseLong(id)).get();
 		Integer finalAmount = Integer.parseInt(productFromDb.getAmount()) - Integer.parseInt(amountToWithdrawal);
+		if(finalAmount < 0 ) {
+			return null;
+		}
 		productFromDb.setAmount(finalAmount.toString());
 		return productRepository.save(productFromDb);
 	}
@@ -56,11 +60,5 @@ public class ProductServiceImpl implements ProductService {
 		Integer finalAmount = Integer.parseInt(productFromDb.getAmount()) + Integer.parseInt(amountToDeposit);
 		productFromDb.setAmount(finalAmount.toString());
 		return productRepository.save(productFromDb);
-	}
-
-	
-
-	
-
-	
+	}	
 }
