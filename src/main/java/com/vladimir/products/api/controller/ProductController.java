@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,8 +21,11 @@ import com.vladimir.products.api.service.ProductService;
 
 import io.swagger.annotations.ApiOperation;
 
+
+
 @RestController
 @RequestMapping("/api")
+@CrossOrigin(origins="*")
 public class ProductController {
 	@Autowired
 	private Environment env;
@@ -30,11 +34,13 @@ public class ProductController {
     private ProductService productService;
 
 	
+	
 	@GetMapping("/status")
 	@ApiOperation(value="Server Status")
 	public String status() {
 		return "server running on port " + env.getProperty("local.server.port");
 	}
+	
 	
 	@ApiOperation(value="List of the products items")
 	@GetMapping("/products")
@@ -68,21 +74,21 @@ public class ProductController {
 		if(updatedProduct == null) {
 			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 		}
-		return new ResponseEntity<>(updatedProduct, HttpStatus.OK);
+		return new ResponseEntity<Product>(updatedProduct, HttpStatus.OK);
 	}
 	
 	@PutMapping("/products/{id}/d/{amountToDeposit}")
 	@ApiOperation(value="Deposit quantity of a specific product to stock", notes="Provide an id and amount to deposit")
 	public ResponseEntity<Product> toDeposit(@PathVariable("id") String id, @PathVariable("amountToDeposit") String amountToDeposit){
 		Product updatedProduct = productService.toDeposit(id, amountToDeposit);
-		return new ResponseEntity<>(updatedProduct, HttpStatus.OK);
+		return new ResponseEntity<Product>(updatedProduct, HttpStatus.OK);
 	}
 	
 	
 	@DeleteMapping("/products/{id}")
 	@ApiOperation(value="Delete specific product from stock", notes="Provide an id to look for specific product")
-	public ResponseEntity<String> deleteProductById(@PathVariable("id") String id) {
+	public ResponseEntity<Void> deleteProductById(@PathVariable("id") String id) {
 		productService.deleteProductById(id);
-		return new ResponseEntity<>("Success", HttpStatus.OK);
+		return new ResponseEntity<>(HttpStatus.OK);
 	}
 }

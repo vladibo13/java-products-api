@@ -5,6 +5,7 @@ package com.vladimir.products.api.model;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
@@ -16,9 +17,17 @@ import io.swagger.annotations.ApiModelProperty;
 @Table(name="products")
 public class Product {
 	@Id
-	@GeneratedValue
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	private long id;
 	
+	public long getId() {
+		return id;
+	}
+
+	public void setId(long id) {
+		this.id = id;
+	}
+
 	@Column(nullable=false, unique=true)
 	@Size(min=1, message="name cannot be less than 1 character")
 	@ApiModelProperty(notes="itemNo generated automaticaly by using UUID libary")
